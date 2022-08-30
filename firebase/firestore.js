@@ -1,21 +1,13 @@
 import { app } from "./auth"
-import { getFirestore, setDoc, getDocs, doc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, collection, addDoc, deleteDoc, documentId } from 'firebase/firestore/lite'
+import { getFirestore, setDoc, getDocs, doc, serverTimestamp, updateDoc, collection, addDoc, deleteDoc, onSnapshot } from 'firebase/firestore'
 
 const db = getFirestore(app)
 
-export const insertNewDailies = userId => {
-  const userDailiesCollection = doc(db, 'dailies', userId)
-  return setDoc(userDailiesCollection, {
-    dailies: [{ id: Date.now(), text: 'Mi primera daily!', completed: false }],
-    lastTimeOnApp: serverTimestamp()
-  })
-}
-
-export const getDailies = (userId, setDailies) => {
+export const listenAllDailies = (userId, callback) => {
   const dailiesSubCollection = collection(db, `users/${userId}/dailies`)
-  return getDocs(dailiesSubCollection)
-    .then(docSnaps => setDailies(docSnaps.docs.map(doc => ({...doc.data(), id: doc.id}))))
-    .catch(err => console.error(err))
+  return onSnapshot(dailiesSubCollection, ({ docs }) => {
+    callback(docs.map(doc => ({...doc.data(), id: doc.id})))
+  })
 }
 
 export const addNewDailie = (userId, newDailyText) => {
