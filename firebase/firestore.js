@@ -1,5 +1,5 @@
 import { app } from "./auth"
-import { getFirestore, setDoc, getDocs, doc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, collection, addDoc } from 'firebase/firestore/lite'
+import { getFirestore, setDoc, getDocs, doc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, collection, addDoc, deleteDoc, documentId } from 'firebase/firestore/lite'
 
 const db = getFirestore(app)
 
@@ -14,7 +14,7 @@ export const insertNewDailies = userId => {
 export const getDailies = (userId, setDailies) => {
   const dailiesSubCollection = collection(db, `users/${userId}/dailies`)
   return getDocs(dailiesSubCollection)
-    .then(docSnaps => setDailies(docSnaps.docs.map(doc => doc.data())))
+    .then(docSnaps => setDailies(docSnaps.docs.map(doc => ({...doc.data(), id: doc.id}))))
     .catch(err => console.error(err))
 }
 
@@ -27,8 +27,9 @@ export const addNewDailie = (userId, newDailyText) => {
 }
 
 export const deleteDaily = (userId, dailyToDelete) => {
-  const docRef = doc(db, 'dailies', userId)
-  return updateDoc(docRef, { dailies: arrayRemove(dailyToDelete) })
+  console.log({userId, dailyToDelete})
+  const docRef = doc(db, `users/${userId}/dailies`, dailyToDelete.id)
+  return deleteDoc(docRef)
 }
 
 export const toogleDaily = (userId, daily) => {
