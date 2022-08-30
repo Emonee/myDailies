@@ -1,5 +1,5 @@
 import { app } from "./auth"
-import { getFirestore, setDoc, getDoc, doc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, collection, addDoc } from 'firebase/firestore/lite'
+import { getFirestore, setDoc, getDocs, doc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, collection, addDoc } from 'firebase/firestore/lite'
 
 const db = getFirestore(app)
 
@@ -11,13 +11,10 @@ export const insertNewDailies = userId => {
   })
 }
 
-export const getDailies = (useId, setDailies) => {
-  const docRef = doc(db, 'dailies', useId)
-  return getDoc(docRef)
-    .then(docSnap => {
-      if (docSnap.exists()) setDailies(docSnap.data().dailies)
-      else changeText([{ id: 123, text: 'Sin dailies :(', completed: false }])
-    })
+export const getDailies = (userId, setDailies) => {
+  const dailiesSubCollection = collection(db, `users/${userId}/dailies`)
+  return getDocs(dailiesSubCollection)
+    .then(docSnaps => setDailies(docSnaps.docs.map(doc => doc.data())))
     .catch(err => console.error(err))
 }
 

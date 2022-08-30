@@ -29,7 +29,7 @@ export default function Home() {
             {dailies && dailies.map(daily => (
               <>
                 <li key={daily.id}>
-                  {daily.text} is {daily.completed ? 'Completed' : 'Unfinished'}
+                  {daily.content} is {daily.completed ? 'Completed' : 'Unfinished'}
                   <button onClick={() => updateDaily(daily)}>Check/Uncheck</button>
                   <button onClick={() => removeDaily(daily)}>Delete</button>
                 </li>
