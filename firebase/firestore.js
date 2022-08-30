@@ -27,19 +27,12 @@ export const addNewDailie = (userId, newDailyText) => {
 }
 
 export const deleteDaily = (userId, dailyToDelete) => {
-  console.log({userId, dailyToDelete})
   const docRef = doc(db, `users/${userId}/dailies`, dailyToDelete.id)
   return deleteDoc(docRef)
 }
 
 export const toogleDaily = (userId, daily) => {
-  const dailyStatus = daily.completed
-  const docRef = doc(db, 'dailies', userId)
-  updateDoc(docRef, { dailies: arrayRemove(daily) })
-  return updateDoc(docRef, {
-    dailies: arrayUnion({
-      ...daily,
-      completed: !dailyStatus
-    })
-  })
+  const { id, completed } = daily
+  const docRef = doc(db, `users/${userId}/dailies`, id)
+  return updateDoc(docRef, { completed: !completed })
 }
