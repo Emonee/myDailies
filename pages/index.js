@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { loginWithGoogle, something, logOut, auth } from "../firebase/auth"
-import { insertNewDailies, getDailies, addDailie, deleteDaily, toogleDaily } from "../firebase/firestore"
+import { insertNewDailies, getDailies, addNewDailie, deleteDaily, toogleDaily } from "../firebase/firestore"
 
 export default function Home() {
   const [user, setUser] = useState(null)
@@ -14,7 +14,7 @@ export default function Home() {
   const setFirstDaily = () => insertNewDailies(auth.currentUser.uid)
   const handleChange = ({ target }) => setNewDailyText(target.value)
   const onClickGetDailies = () => getDailies(auth.currentUser.uid, setDailies)
-  const createDaily = () => addDailie(auth.currentUser.uid, newDailyText)
+  const createDaily = () => addNewDailie(auth.currentUser.uid, newDailyText)
   const updateDaily = (daily) => toogleDaily(auth.currentUser.uid, daily)
   const removeDaily = (daily) => deleteDaily(auth.currentUser.uid, daily)
   

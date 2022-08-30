@@ -1,5 +1,5 @@
 import { app } from "./auth"
-import { getFirestore, setDoc, getDoc, doc, serverTimestamp, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore/lite'
+import { getFirestore, setDoc, getDoc, doc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, collection, addDoc } from 'firebase/firestore/lite'
 
 const db = getFirestore(app)
 
@@ -21,14 +21,11 @@ export const getDailies = (useId, setDailies) => {
     .catch(err => console.error(err))
 }
 
-export const addDailie = (userId, newDailyText) => {
-  const docRef = doc(db, 'dailies', userId)
-  return updateDoc(docRef, {
-    dailies: arrayUnion({
-      id: Date.now(),
-      text: newDailyText,
-      completed: false
-    })
+export const addNewDailie = (userId, newDailyText) => {
+  const dailiesSubCollection = collection(db, `users/${userId}/dailies`)
+  return addDoc(dailiesSubCollection, {
+    completed: false,
+    content: newDailyText
   })
 }
 
