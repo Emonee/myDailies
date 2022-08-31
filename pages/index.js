@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react"
 import { loginWithGoogle, something, logOut, auth } from "../firebase/auth"
-import { insertNewDailies, addNewDailie, deleteDaily, toogleDaily, listenAllDailies } from "../firebase/firestore"
+import { insertNewDailies, addNewDailie, deleteDaily, toogleDaily, listenAllDailies, registerDateConection } from "../firebase/firestore"
 
 export default function Home() {
   const [user, setUser] = useState(null)
   const [dailies, setDailies] = useState(null)
   const [newDailyText, setNewDailyText] = useState('')
 
-  useEffect(() => something(setUser), [user])
+  useEffect(() => {
+    something(setUser)
+    if (user) registerDateConection(auth.currentUser.uid)
+  }, [user])
   useEffect(() => {
     let unsubscribe
-    if (user) {
-      unsubscribe = listenAllDailies(auth.currentUser.uid, setDailies)
-    }
+    if (user) unsubscribe = listenAllDailies(auth.currentUser.uid, setDailies)
     return () => unsubscribe && unsubscribe()
   }, [user])
 
-  const handleClick = () => loginWithGoogle(setUser)
+  const handleClick = () => loginWithGoogle()
   const logout = () => logOut(setUser)
   const setFirstDaily = () => insertNewDailies(auth.currentUser.uid)
   const handleChange = ({ target }) => setNewDailyText(target.value)
@@ -33,13 +34,11 @@ export default function Home() {
           <button onClick={setFirstDaily}>Set first Daily</button>
           <u>
             {dailies && dailies.map(daily => (
-              <>
-                <li key={daily.id}>
-                  {daily.content} is {daily.completed ? 'Completed' : 'Unfinished'}
-                  <button onClick={() => updateDaily(daily)}>Check/Uncheck</button>
-                  <button onClick={() => removeDaily(daily)}>Delete</button>
-                </li>
-              </>
+              <li key={daily.id}>
+                {daily.content} is {daily.completed ? 'Completed' : 'Unfinished'}
+                <button onClick={() => updateDaily(daily)}>Check/Uncheck</button>
+                <button onClick={() => removeDaily(daily)}>Delete</button>
+              </li>
             ))}
           </u>
           <button onClick={createDaily}>Add daily</button>
