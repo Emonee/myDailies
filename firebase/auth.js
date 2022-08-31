@@ -1,6 +1,7 @@
 import { firebaseConfig } from "./config"
 import { initializeApp } from "firebase/app"
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth"
+import { addNewUserWithBasicSchema } from "./firestore";
 
 export const app = initializeApp(firebaseConfig)
 
@@ -12,10 +13,10 @@ export const something = setUser => {
   })
 }
 
-export const loginWithGoogle = setUser => {
+export const loginWithGoogle = () => {
   const provider = new GoogleAuthProvider()
   return signInWithPopup(auth, provider)
-    .then(res => setUser(res.user.displayName))
+    .then(({ user }) => addNewUserWithBasicSchema(user.uid))
     .catch(err => console.error(err))
 }
 
